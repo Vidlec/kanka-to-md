@@ -11,6 +11,7 @@ export enum ENTITY_TYPE {
   FAMILY = 2,
   TIMELINE = 18,
   EVENT = 7,
+  QUEST = 10,
 }
 
 export enum VISIBILITY_TYPE {
@@ -84,4 +85,5 @@ export const entityTypeToString = {
   [ENTITY_TYPE.FAMILY]: "family",
   [ENTITY_TYPE.TIMELINE]: "timeline",
   [ENTITY_TYPE.EVENT]: "event",
+  [ENTITY_TYPE.QUEST]: "quest",
 }
