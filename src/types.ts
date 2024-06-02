@@ -53,6 +53,8 @@ export const EntitySchema = z.object({
   entry: z.string().optional().nullable(),
   age: z.string().optional().nullable(),
   sex: z.string().optional().nullable(),
+  price: z.string().optional().nullable(),
+  size: z.string().optional().nullable(),
   location_id: z.number().optional().nullable(),
   pivotMembers: z.array(MemberSchema).optional().nullable(),
   members: z.array(MemberSchema).optional().nullable(),

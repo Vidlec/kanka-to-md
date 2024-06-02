@@ -24,6 +24,8 @@ const run = async () => {
         entry,
         age,
         sex,
+        price,
+        size,
         pivotMembers,
         members,
         type,
@@ -39,6 +41,8 @@ const run = async () => {
         entry && md.push({ p: interpolateMentions(removeHtmlTags(entry), mentionsMap) })
         age && md.push({ p: `Věk: ${age}` })
         sex && md.push({ p: `Pohlaví: ${translateGender[sex] ?? sex}` })
+        price && md.push({ p: `Cena: ${price}` })
+        size && md.push({ p: `Velikost: ${size}` })
 
         entityAttributes?.forEach(({ name, isHidden, value }) => {
           if (isHidden || !value) return
