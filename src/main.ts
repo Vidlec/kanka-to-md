@@ -26,11 +26,14 @@ const run = async () => {
         sex,
         pivotMembers,
         members,
+        type,
+        location_id,
         entity: { posts, name, is_private, entityAttributes },
       }) => {
         if (is_private) return
 
-        md.push({ h2: name })
+        md.push({ h2: `${name}${type ? ` (${type})` : ""}` })
+        location_id && md.push({ p: `Nachází se v ${entitiesMap.get(location_id)?.name}` })
 
         entry && md.push({ p: interpolateMentions(removeHtmlTags(entry), mentionsMap) })
         age && md.push({ p: `Věk: ${age}` })
