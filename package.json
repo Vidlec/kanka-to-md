@@ -1,0 +1,30 @@
+{
+  "name": "kanka-to-text",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "./node_modules/.bin/esbuild ./src/main.ts --bundle --outfile=dist/kanka-to-text.js --platform=node",
+    "start": "npm run build && node ./dist/kanka-to-text.js",
+    "dev": "nodemon"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^20.12.13",
+    "pluralize": "^8.0.0",
+    "prettier": "^3.2.5",
+    "ts-markdown": "^1.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@swc/core": "^1.5.7",
+    "@swc/helpers": "^0.5.11",
+    "@types/pluralize": "^0.0.33",
+    "esbuild": "0.21.4",
+    "nodemon": "^3.1.2",
+    "regenerator-runtime": "^0.14.1"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "watch": ["src"],
+  "ext": "ts,mjs,js,json,graphql",
+  "exec": "./node_modules/.bin/esbuild ./src/main.ts --bundle --outfile=dist/kanka-to-text.js --platform=node && node ./dist/kanka-to-text.js"
+}
