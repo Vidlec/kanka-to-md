@@ -11,6 +11,7 @@ const entitiesTypes = [
   ENTITY_TYPE.ITEM,
   ENTITY_TYPE.RACE,
   ENTITY_TYPE.FAMILY,
+  ENTITY_TYPE.TIMELINE,
 ]
 
 export const loadEntities = async () => {

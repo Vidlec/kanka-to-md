@@ -28,6 +28,7 @@ const run = async () => {
         members,
         type,
         location_id,
+        eras,
         entity: { posts, name, is_private, entityAttributes },
       }) => {
         if (is_private) return
@@ -68,6 +69,17 @@ const run = async () => {
               { p: interpolateMentions(removeHtmlTags(post.entry), mentionsMap) }
             )
           }
+        })
+
+        eras?.forEach(({ start_year, end_year, entry, abbreviation, name }) => {
+          md.push(
+            {
+              h3: `${name}${abbreviation ? ` (${abbreviation})` : ""}`,
+            },
+            { p: `Trvání: ${start_year} až ${end_year}` }
+          )
+
+          entry && md.push({ p: interpolateMentions(removeHtmlTags(entry), mentionsMap) })
         })
       }
     )

@@ -9,6 +9,7 @@ export enum ENTITY_TYPE {
   NOTE = 6,
   RACE = 9,
   FAMILY = 2,
+  TIMELINE = 18,
 }
 
 export enum VISIBILITY_TYPE {
@@ -37,6 +38,14 @@ const MemberSchema = z.object({
   role: z.string().optional().nullable(),
 })
 
+const EraSchema = z.object({
+  name: z.string(),
+  abbreviation: z.string().optional().nullable(),
+  start_year: z.number(),
+  end_year: z.number(),
+  entry: z.string().optional().nullable(),
+})
+
 export const EntitySchema = z.object({
   id: z.number(),
   type: z.string().optional().nullable(),
@@ -55,6 +64,7 @@ export const EntitySchema = z.object({
     entityAttributes: z.array(EntityAttributeSchema).optional().nullable(),
     posts: z.array(PostSchema).optional().nullable(),
   }),
+  eras: z.array(EraSchema).optional().nullable(),
 })
 
 export type Entity = z.infer<typeof EntitySchema>
@@ -69,4 +79,5 @@ export const entityTypeToString = {
   [ENTITY_TYPE.ITEM]: "item",
   [ENTITY_TYPE.RACE]: "race",
   [ENTITY_TYPE.FAMILY]: "family",
+  [ENTITY_TYPE.TIMELINE]: "timeline",
 }
