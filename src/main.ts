@@ -8,6 +8,7 @@ import {
 import { MarkdownEntryOrPrimitive, tsMarkdown as tsm } from "ts-markdown"
 import { Entity, VISIBILITY_TYPE, entityTypeToString } from "./types"
 import { loadEntities } from "./loader"
+import { type } from "node:os"
 
 const run = async () => {
   const categories = await loadEntities()
@@ -17,8 +18,8 @@ const run = async () => {
   const mentionsMap = new Map(entities.map((entity) => [entity.entity.id, entity.name]))
   const entitiesMap = new Map(entities.map((entity) => [entity.id, entity]))
 
-  const writeMd = (type: string, entities: Entity[]) => {
-    let md: MarkdownEntryOrPrimitive[] = [{ h1: type }]
+  const writeMd = (category: string, entities: Entity[]) => {
+    let text = `${category}\n`
     entities.forEach(
       ({
         entry,
@@ -35,61 +36,52 @@ const run = async () => {
       }) => {
         if (is_private) return
 
-        md.push({ h2: `${name}${type ? ` (${type})` : ""}` })
-        location_id && md.push({ p: `Nachází se v ${entitiesMap.get(location_id)?.name}` })
-
-        entry && md.push({ p: interpolateMentions(removeHtmlTags(entry), mentionsMap) })
-        age && md.push({ p: `Věk: ${age}` })
-        sex && md.push({ p: `Pohlaví: ${translateGender[sex] ?? sex}` })
-        price && md.push({ p: `Cena: ${price}` })
-        size && md.push({ p: `Velikost: ${size}` })
-
+        text = text + `\n${name}${` (${type ?? category})`}\n`
+        location_id && `Nachází se v ${entitiesMap.get(location_id)?.name}\n`
+        age && (text = text + `\nVěk: ${age}\n`)
+        sex && (text = text + `Pohlaví: ${translateGender[sex] ?? sex}\n`)
+        price && (text = text + `Cena: ${price}\n`)
+        size && (text = text + `Velikost: ${size}\n`)
         entityAttributes?.forEach(({ name, isHidden, value }) => {
           if (isHidden || !value) return
-          md.push({ p: `${name}: ${value}` })
+          text = text + `${name}: ${value}\n`
         })
+        entry && (text = text + `\n${interpolateMentions(removeHtmlTags(entry), mentionsMap)}\n`)
 
         if (hasRenderableMembers(pivotMembers)) {
-          md.push({ h3: "Členové" })
+          text = text + "\nČlenové:\n"
           pivotMembers.forEach(({ character_id, is_private }) => {
             if (is_private) return
-            md.push({ p: entitiesMap.get(character_id)?.name })
+            text = text + `${entitiesMap.get(character_id)?.name}\n`
           })
         }
 
         if (hasRenderableMembers(members)) {
-          md.push({ h3: "Členové" })
+          text = text + "\nČlenové:\n"
           members.forEach(({ character_id, is_private, role }) => {
             if (is_private) return
-            md.push({ p: `${entitiesMap.get(character_id)?.name}${role ? ` - ${role}` : ""}` })
+            text = text + `${entitiesMap.get(character_id)?.name}${role ? ` - ${role}` : ""}\n`
           })
         }
 
         posts?.forEach((post) => {
           if (![VISIBILITY_TYPE.ALL, VISIBILITY_TYPE.MEMBERS].includes(post.visibility_id)) return
           if (post.entry) {
-            md.push(
-              { h3: post.name },
-              { p: interpolateMentions(removeHtmlTags(post.entry), mentionsMap) }
-            )
+            text = text + `\n${post.name}\n`
+            text = text + `${interpolateMentions(removeHtmlTags(post.entry), mentionsMap)}\n`
           }
         })
 
         eras?.forEach(({ start_year, end_year, entry, abbreviation, name }) => {
-          md.push(
-            {
-              h3: `${name}${abbreviation ? ` (${abbreviation})` : ""}`,
-            },
-            { p: `Trvání: ${start_year} až ${end_year}` }
-          )
-
-          entry && md.push({ p: interpolateMentions(removeHtmlTags(entry), mentionsMap) })
+          text = text + `\n${`${name}${abbreviation ? ` (${abbreviation})` : ""}`}\n`
+          text = text + `Trvání: ${start_year} až ${end_year}\n`
+          entry && (text = text + `${interpolateMentions(removeHtmlTags(entry), mentionsMap)}\n`)
         })
       }
     )
 
-    console.log(`Created ${type}.md`)
-    return writeFile(`./${type}.md`, tsm(md))
+    console.log(`Created ${category}.txt`)
+    return writeFile(`./${category}.txt`, text)
   }
 
   await Promise.all(categories.map(({ path, files }) => writeMd(path, files)))
