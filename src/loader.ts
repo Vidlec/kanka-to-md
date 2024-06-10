@@ -14,6 +14,7 @@ const entitiesTypes = [
   ENTITY_TYPE.TIMELINE,
   ENTITY_TYPE.EVENT,
   ENTITY_TYPE.QUEST,
+  ENTITY_TYPE.TAG,
 ]
 
 export const loadEntities = async () => {

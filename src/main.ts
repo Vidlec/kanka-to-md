@@ -5,20 +5,23 @@ import {
   translateGender,
   writeFile,
 } from "./utils"
-import { MarkdownEntryOrPrimitive, tsMarkdown as tsm } from "ts-markdown"
-import { Entity, VISIBILITY_TYPE, entityTypeToString } from "./types"
+import { ENTITY_TYPE, Entity, VISIBILITY_TYPE } from "./types"
 import { loadEntities } from "./loader"
-import { type } from "node:os"
 
 const run = async () => {
   const categories = await loadEntities()
 
   const entities = categories.map((category) => category.files).flat()
 
+  const tagsMap = new Map(
+    entities
+      .filter((entity) => entity.entity.type_id === ENTITY_TYPE.TAG)
+      .map((tag) => [tag.id, tag])
+  )
   const mentionsMap = new Map(entities.map((entity) => [entity.entity.id, entity.name]))
   const entitiesMap = new Map(entities.map((entity) => [entity.id, entity]))
 
-  const writeMd = (category: string, entities: Entity[]) => {
+  const write = (category: string, entities: Entity[]) => {
     let text = `${category}\n`
     entities.forEach(
       ({
@@ -32,11 +35,18 @@ const run = async () => {
         type,
         location_id,
         eras,
-        entity: { posts, name, is_private, entityAttributes },
+        entity: { posts, name, is_private, entityAttributes, entityTags },
       }) => {
         if (is_private) return
 
         text = text + `\n${name}${` (${type ?? category})`}\n`
+        entityTags?.forEach(({ tag_id }, index) => {
+          index === 0 && (text = text + "Tags: ")
+          const tag = tagsMap.get(tag_id)
+          if (tag?.entity.is_private) return
+          text = text + `${index !== 0 ? ", " : ""}${tag?.name}`
+          index === entityTags.length - 1 && (text = text + "\n")
+        })
         location_id && `Nachází se v ${entitiesMap.get(location_id)?.name}\n`
         age && (text = text + `\nVěk: ${age}\n`)
         sex && (text = text + `Pohlaví: ${translateGender[sex] ?? sex}\n`)
@@ -84,7 +94,11 @@ const run = async () => {
     return writeFile(`./${category}.txt`, text)
   }
 
-  await Promise.all(categories.map(({ path, files }) => writeMd(path, files)))
+  await Promise.all(
+    categories
+      .filter((category) => !category.path.includes("tags"))
+      .map(({ path, files }) => write(path, files))
+  )
 }
 
 run()

@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { number, z } from "zod"
 
 export enum ENTITY_TYPE {
   CHARACTER = 1,
@@ -12,6 +12,7 @@ export enum ENTITY_TYPE {
   TIMELINE = 18,
   EVENT = 7,
   QUEST = 10,
+  TAG = 12,
 }
 
 export enum VISIBILITY_TYPE {
@@ -67,6 +68,10 @@ export const EntitySchema = z.object({
     type_id: z.nativeEnum(ENTITY_TYPE),
     entityAttributes: z.array(EntityAttributeSchema).optional().nullable(),
     posts: z.array(PostSchema).optional().nullable(),
+    entityTags: z
+      .array(z.object({ tag_id: z.number() }))
+      .optional()
+      .nullable(),
   }),
   eras: z.array(EraSchema).optional().nullable(),
 })
@@ -86,4 +91,5 @@ export const entityTypeToString = {
   [ENTITY_TYPE.TIMELINE]: "timeline",
   [ENTITY_TYPE.EVENT]: "event",
   [ENTITY_TYPE.QUEST]: "quest",
+  [ENTITY_TYPE.TAG]: "tags",
 }
